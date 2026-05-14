@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salastatud kiri</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: #050505;
+      color: white;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .screen {
+      z-index: 2;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 40px;
+      color: #ff4d4d;
+      text-shadow: 0 0 15px red;
+    }
+
+    button {
+      background: red;
+      color: white;
+      border: none;
+      padding: 20px 40px;
+      border-radius: 50px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      box-shadow: 0 0 25px red, 0 0 60px red;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 40px red, 0 0 90px red;
+    }
+
+    input {
+      margin-top: 25px;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1.1rem;
+      text-align: center;
+      outline: none;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .heart-container {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+    }
+
+    .love-text {
+      position: absolute;
+      color: red;
+      font-size: 14px;
+      font-weight: bold;
+      text-shadow: 0 0 8px red;
+      animation: glow 1.5s infinite alternate;
+      white-space: nowrap;
+    }
+
+    @keyframes glow {
+      from {
+        opacity: 0.6;
+        text-shadow: 0 0 5px red;
+      }
+      to {
+        opacity: 1;
+        text-shadow: 0 0 15px red, 0 0 30px red;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="screen" id="mainScreen">
+    <h1>Hei nunnu:)</h1>
+    <button onclick="showQuestion()">Mis see on?</button>
+
+    <div id="questionBox" class="hidden">
+      <p style="margin-top: 30px;">...</p>
+      <input id="answer" placeholder="vasta siia..." onkeydown="checkEnter(event)" />
+    </div>
+  </div>
+
+  <div class="heart-container" id="heartContainer"></div>
+
+  <script>
+    function showQuestion() {
+      document.getElementById("questionBox").classList.remove("hidden");
+    }
+
+    function checkEnter(event) {
+      if (event.key === "Enter") {
+        checkAnswer();
+      }
+    }
+
+    document.getElementById("answer").addEventListener("input", checkAnswer);
+
+    function checkAnswer() {
+      const answer = document.getElementById("answer").value.toLowerCase().trim();
+
+      if (answer === "ei sina oled nunnu") {
+        document.getElementById("mainScreen").style.display = "none";
+        createHeart();
+      }
+    }
+
+      function createHeart() {
+  const container = document.getElementById("heartContainer");
+  container.innerHTML = "";
+
+  const points = [];
+  const centerX = window.innerWidth / 2;
+  const centerY = window.innerHeight / 2;
+
+  const scale = Math.min(window.innerWidth, window.innerHeight) / 30;
+
+  // FILLED heart
+  for (let i = 0; i < 250; i++) {
+
+    // random radius fills the inside
+    const r = Math.sqrt(Math.random());
+
+    const t = Math.random() * Math.PI * 2;
+
+    const x = r * 16 * Math.pow(Math.sin(t), 3);
+
+    const y = -r * (
+      13 * Math.cos(t)
+      - 5 * Math.cos(2 * t)
+      - 2 * Math.cos(3 * t)
+      - Math.cos(4 * t)
+    );
+
+    points.push({
+      x: centerX + x * scale,
+      y: centerY + y * scale
+    });
+  }
+
+  // sort so it appears nicely from top to bottom
+  points.sort((a, b) => a.y - b.y);
+
+  // animate texts appearing one by one
+  points.forEach((point, index) => {
+
+    setTimeout(() => {
+
+      const text = document.createElement("div");
+
+      text.className = "love-text";
+
+      text.innerText = "ma armastan sind";
+
+      text.style.left =
+        point.x + (Math.random() - 0.5) * 15 + "px";
+
+      text.style.top =
+        point.y + (Math.random() - 0.5) * 15 + "px";
+
+      text.style.fontSize =
+        Math.random() * 6 + 10 + "px";
+
+      text.style.opacity = "0";
+
+      container.appendChild(text);
+
+      // smooth fade in
+      requestAnimationFrame(() => {
+        text.style.transition = "opacity 0.3s";
+        text.style.opacity = "1";
+      });
+
+    }, index * 12); // speed of filling
+  });
+}
+</script>
+</body>
+</html>
